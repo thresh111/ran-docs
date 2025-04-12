@@ -28,7 +28,7 @@ export const Hero = () => {
             </Button>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="lg"
               className="w-fit rounded-full"
@@ -37,7 +37,7 @@ export const Hero = () => {
             >
               <Link href="/docs/components">ran motion ui</Link>
             </Button>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </div>

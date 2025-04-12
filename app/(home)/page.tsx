@@ -6,6 +6,7 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { Hero } from '@/components/hero';
 import { Logo } from '@/components/logo';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const logoWrapperVariants = {
@@ -93,7 +94,7 @@ export default function HomePage() {
                 : { right: -43, opacity: 0 }
             }
             transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-            className="absolute z-40 flex items-center gap-x-1"
+            className="absolute z-40 flex items-center justify-end gap-x-4"
           >
             <a
               href="https://github.com/thresh111"
@@ -104,6 +105,7 @@ export default function HomePage() {
             >
               <GithubIcon />
             </a>
+            <ThemeSwitcher />
           </motion.div>
         </div>
       </motion.div>
