@@ -5,7 +5,6 @@ import { motion } from 'motion/react';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { Hero } from '@/components/hero';
-import IntegrationsSection from '@/components/integrations-7';
 import { Logo } from '@/components/logo';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -62,7 +61,7 @@ export default function HomePage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setTransition(true);
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 

@@ -38,6 +38,9 @@ export const Logo = ({
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 200 50" // 简化viewBox
         className={cn(sizes[size].svg, className)}
+        initial={draw ? { opacity: 0 } : undefined}
+        animate={draw ? { opacity: 1 } : undefined}
+        transition={{ duration: 4, ease: 'easeInOut' }}
         {...props}
       >
         <motion.text
