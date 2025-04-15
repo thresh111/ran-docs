@@ -10,6 +10,7 @@ var docs = defineDocs({
   docs: {
     schema: frontmatterSchema.extend({
       new: z.boolean().optional(),
+      updated: z.boolean().optional(),
       author: z.object({
         name: z.string(),
         url: z.string().optional()
