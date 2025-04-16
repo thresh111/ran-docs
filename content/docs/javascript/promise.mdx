@@ -1,0 +1,38 @@
+---
+title: promise
+updated: true
+---
+
+## 状态
+
+- **pending（进行中）**：初始状态，异步操作未完成。
+- **fulfilled（已成功）**：异步操作成功完成。
+- **rejected（已失败）**：异步操作执行失败。
+
+## 静态方法
+
+### Promise.resolve
+
+将现有对象转换为Promise对象。
+
+### Promise.reject
+
+返回一个状态为`rejected`的Promise对象。
+
+### Promise.all
+
+接收可迭代对象（如数组），其中元素均为Promise。只有所有Promise都变为`fulfilled`，返回的新Promise才成功，结果是包含所有Promise结果的数组，顺序与传入一致。
+
+### Promise.allSettled
+
+接收可迭代对象。无论传入的Promise成功或失败，都会等待所有Promise执行完毕，返回新Promise。
+
+### Promise.any
+
+接收可迭代对象，只要有一个Promise成功，返回的新Promise立即成功，结果为第一个成功Promise的结果。若所有Promise都失败，则以`AggregateError`失败。适用于多个数据源，只需一个成功返回数据的场景。
+
+### Promise.race
+
+接收可迭代对象，当其中任意一个Promise状态改变（成功或失败），返回的新Promise就以相同状态结束，结果为该Promise的结果。
+
+## 手写实现

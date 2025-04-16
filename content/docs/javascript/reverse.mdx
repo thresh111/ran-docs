@@ -1,0 +1,11 @@
+---
+title: 'reverse string'
+---
+
+```js
+const str = 'abcde';
+
+const res = str.split('').reduce((pre, cur) => {
+  return `${cur}${pre}`;
+});
+```

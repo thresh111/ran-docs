@@ -1,5 +1,5 @@
 {
   "title": "Ran Docs",
   "root": true,
-  "pages": ["index", "index2", "react", "ran-motion"]
+  "pages": ["index", "react", "javascript"]
 }

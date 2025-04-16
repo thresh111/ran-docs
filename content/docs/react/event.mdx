@@ -1,0 +1,10 @@
+---
+title: 'react event'
+---
+
+## 事件传播机制
+
+1. 找触发事件的DOM,找对应的 FiberNode 节点
+2. 收集从 currentFiberNode 到 HostRootFiber 所有注册相同类型的事件回调函数
+3. 反向遍历，模拟捕获
+4. 正向便利，模拟冒泡
