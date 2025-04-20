@@ -1,0 +1,106 @@
+---
+title: useState/useReducer
+---
+
+```js
+function mountWorkInProgressHook() {
+  const hook = {
+    memoizedState: null,
+
+    baseState: null,
+    baseQueue: null,
+    queue: null,
+
+    next: null,
+  };
+
+  if (workInProgressHook === null) {
+    // This is the first hook in the list
+    currentlyRenderingFiber.memoizedState = workInProgressHook = hook;
+  } else {
+    // Append to the end of the list
+    workInProgressHook = workInProgressHook.next = hook;
+  }
+  return workInProgressHook;
+}
+```
+
+## useState
+
+### mountState
+
+```js
+function mountState(initialState:) {
+  const hook = mountWorkInProgressHook();
+
+  if (typeof initialState === 'function') {
+    initialState = initialState();
+  }
+
+  hook.memoizedState = hook.baseState = initialState;
+
+  const queue = {
+    pending: null,
+    lanes: NoLanes,
+    dispatch: null,
+    lastRenderedReducer: basicStateReducer,
+    lastRenderedState: initialState,
+  };
+
+  hook.queue = queue;
+
+  const dispatch = queue.dispatch = (dispatchSetState.bind(
+    null,
+    currentlyRenderingFiber,
+    queue,
+  ));
+
+  return [hook.memoizedState, dispatch];
+}
+```
+
+### updateState
+
+```js
+function updateState(initialState){
+  return updateReducer(basicStateReducer, (initialState: any));
+}
+```
+
+## useReducer
+
+### mountReducer
+
+```js
+
+function mountReducer<S, I, A>(
+  reducer: (S, A) => S,
+  initialArg: I,
+  init?: I => S,
+): [S, Dispatch<A>] {
+  const hook = mountWorkInProgressHook();
+  let initialState;
+  if (init !== undefined) {
+    initialState = init(initialArg);
+  } else {
+    initialState = ((initialArg: any): S);
+  }
+  hook.memoizedState = hook.baseState = initialState;
+  const queue: UpdateQueue<S, A> = {
+    pending: null,
+    lanes: NoLanes,
+    dispatch: null,
+    lastRenderedReducer: reducer,
+    lastRenderedState: (initialState: any),
+  };
+  hook.queue = queue;
+  const dispatch: Dispatch<A> = (queue.dispatch = (dispatchReducerAction.bind(
+    null,
+    currentlyRenderingFiber,
+    queue,
+  ): any));
+  return [hook.memoizedState, dispatch];
+}
+```
+
+### updateReducer

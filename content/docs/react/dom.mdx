@@ -1,0 +1,39 @@
+---
+title: 虚拟 DOM
+icon: Chrome
+---
+
+## 什么是虚拟 DOM
+
+虚拟 DOM 就是描述 真实 DOM 的思想
+
+## 为什么需要虚拟 DOM
+
+- 跨平台渲染能力
+- 相较于真实 DOM , 属性少,更新处理快 （react 团队用 虚拟 DOM 跟 `innerHTML` 对比）
+
+## 跨平台渲染能力
+
+虚拟 DOM 只是多平台 UI 的描述，根据不同平台，用不同的包渲染 `ReactDOM`,`ReactNative`,`ReactArt`,`ReactTest`
+
+## 怎么对比的
+
+在更新中
+
+- `innerHTML` 涉及到两个层面 , JS 计算（字符串解析）,DOM 计算(销毁，创建 DOM)
+- 虚拟DOM则只需要DOM 计算（创建，更新）
+
+## ReactElement 对象
+
+```javascript
+const ReactElement = {
+  $$typeof,
+
+  type: type,
+  key: key,
+  ref: ref,
+  props: props,
+
+  _owner,
+};
+```

@@ -1,0 +1,25 @@
+---
+title: react 架构
+---
+
+React v15以及之前的架构称之为 Stack 架构，从 v16 开始，React 重构了整体的架构，新的架构被称之为 Fiber 架构，新的架构相比旧架构有一个最大的特点就是能够实现时间切片。
+
+## Stack 架构
+
+react是构建大型应用快速响应的 `lib` 库,导致无法快速响应的因素: `cpu 瓶颈` 、`i/o 瓶颈`
+
+### cpu 瓶颈
+
+耗时的 JS 计算任务，导致长时间占据主线程，造成卡顿
+
+#### 渲染流水线
+
+设备的刷新频率为 60 FPS，1秒钟需要绘制 60 次，1000ms / 60 = 16.66ms，也就是说浏览器每隔 16.66ms 就需要绘制一帧
+
+处理js，requestAnimationFrame，渲染流程，commit渲染流程：dom树，cssom 树，layout 树，renderTree，paint
+
+构建 DOM树，预加载扫描器，构建 cssom 树，计算 layout 树（不展示 dom 中不可见的 dom 元素），计算样式，布局
+
+### i/o 瓶颈
+
+需要在网络请求耗时长的任务之后执行 JS ,无法响应

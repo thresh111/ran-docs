@@ -1,0 +1,131 @@
+---
+title: hook 原理
+new: true
+---
+
+hook的组成
+
+## renderWithHooks
+
+当 function 组件触发时，会执行 renderWithHooks 方法，该方法会清空 `wip` 的 memoizedState 和 updateQueue，会判断该组件是初始化还是更新，为 `ReactCurrentDispatcher` 复制不同的上下文对象，调用 `Component` 方法，来执行函数组件，组件里面的 `hook` 就会依次执行。
+
+```js
+function renderWithHooks(current, wip, props, secondArgs, nextRenderLanes) {
+  renderLanes = nextRenderLane;
+  currentRenderFiber = wip;
+
+
+  wip.memorizedState = null;
+  wip.updateQueue = null;
+
+  ReactCurrentDispatcher.current =
+    current === null || current.memorizedState === null
+      ? HooksDispatcherOnMount
+      : HooksDispatcherOnUpdate;
+
+  let children = Component(props, secondArgs);
+
+  finishRenderingHooks(current, wip);
+
+  return children;
+}
+
+finishRenderingHooks(current, wip){
+  ReactHookDispatcher.current = ContextOnlyDispatcher;
+}
+```
+
+这里面涉及到三种 dispatcher 对象（hook 策略）: `HooksDispatcherOnMount`, `HooksDispatcherOnUpdate`, `ContextOnlyDispatcher`
+
+## HooksDispatcherOnMount
+
+```ts
+const HooksDispatcherOnMount: Dispatcher = {
+  readContext,
+  ...
+  useCallback: mountCallback,
+  useEffect: mountEffect,
+  useMemo: mountMemo,
+  useReducer: mountReducer,
+  useRef: mountRef,
+  useState: mountState,
+};
+```
+
+## HooksDispatcherOnUpdate
+
+```ts
+const HooksDispatcherOnUpdate: Dispatcher = {
+  readContext,
+  ...
+  useCallback: updateCallback,
+  useContext: readContext,
+  useEffect: updateEffect,
+  useMemo: updateMemo,
+  useReducer: updateReducer,
+  useRef: updateRef,
+  useState: updateState,
+  ...
+};
+```
+
+## ContextOnlyDispatcher
+
+```ts
+const ContextOnlyDispatcher: Dispatcher = {
+  readContext,
+  ...
+  useCallback: throwInvalidHookError,
+  useContext: throwInvalidHookError,
+  useEffect: throwInvalidHookError,
+  useMemo: throwInvalidHookError,
+  useReducer: throwInvalidHookError,
+  useRef: throwInvalidHookError,
+  useState: throwInvalidHookError,
+  ...
+};
+```
+
+## 举个例子 useState
+
+```jsx
+function App() {
+  const [count, setCount] = useState(0);
+  useReducer
+
+  memo useCllback （）=》 ， 【...deps】
+
+  useRef {current:xxx}
+
+
+  return <>{count}</>;
+}
+```
+
+执行这个 `App` 组件,会执行 `renderWithHooks`, 执行`Component`方法的时候,会确认当前组件是`mount`还是`update`阶段。 `mount`，会执行 `mountState` 方法。
+
+`mountState` 里面调用 `workInprogressHook`,创建 `hook` 对象链表
+
+```js
+function mountState(initialState) {}
+```
+
+```js
+function workInprogressHook() {}
+```
+
+## hook的组成
+
+```js
+const hook = {
+
+  memoizedState,
+
+  baseState: null,
+  baseQueue: [],
+
+  queue:[]
+
+  next,
+};
+```

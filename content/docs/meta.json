@@ -1,5 +1,10 @@
 {
   "title": "Ran Docs",
   "root": true,
-  "pages": ["index", "react", "javascript"]
+  "pages": [
+    "index",
+    "react",
+    "webpack",
+    "[Triangle][Vercel](https://vercel.com)"
+  ]
 }

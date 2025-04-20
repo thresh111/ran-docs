@@ -1,0 +1,40 @@
+---
+title: 构建原理
+---
+
+```js
+((modules) => {
+  const cacheModules = {};
+
+  function require(moduleId) {
+    if (cacheModules[moduleId]) {
+      return cacheModules[moduleId];
+    }
+
+    const module = {
+      exports: {},
+    };
+    modules[moduleId](module, module.exports, require);
+
+    cacheModules[moduleId] = module.exports;
+
+    return module.exports;
+  }
+
+  require('./index.js');
+})({
+  './a.js': (module, exports) => {
+    console.log('=========>module a');
+    module.exports = {
+      name: 'name A',
+    };
+  },
+  './index.js': (module, exports, require) => {
+    const a = require('./a.js');
+    const b = require('./a.js');
+    console.log(a, '=========> a');
+    console.log(b, '=========> b');
+    console.log('=========> module index');
+  },
+});
+```
