@@ -2,47 +2,50 @@
 title: 2025 尤雨溪最新演讲：围绕 Vite 的前端统一工具链
 ---
 
+import { CopyButton } from '@/components/ran-motion/copy-button';
 import Divider from '@/components/ran-motion/divider';
+import { GradientText } from '@/components/ran-motion/gradient-text';
+import { InstallTabs } from '@/components/ran-motion/install-tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsContents,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ran-motion/tabs';
 
-vite 组成：
+<div className="mb-6">
+  <GradientText
+    text="Vite 统一工具链"
+    className="text-2xl font-bold"
+    neon={true}
+    gradient="linear-gradient(90deg, #3b82f6 0%, #2dd4bf 50%, #a855f7 100%)"
+  />
+</div>
 
-node_modules 在开发时用 esbuild ，生产用的 rollup
+## Vite 组成架构
 
-- 开发生产打包产物不一致 (cjs/esm 混用处理)
+| 环境 | 工具 | 说明 | 优势 |
+| --- | --- | --- | --- |
+| 概述 | esbuild (GO) + rollup (JS/TS) | Vite 在不同环境使用不同工具 | - |
+| 开发环境 | esbuild | node_modules 在开发时用 esbuild | 开发环境启动速度快、HMR 响应迅速 |
+| 生产环境 | rollup | 生产环境使用 rollup | 生产环境构建优化、代码分割、压缩 |
 
-- js/native 传输效率问题
+## 面临的挑战
 
-多次重复 parse/transform/codegen
+| 挑战 | 描述 |
+| --- | --- |
+| 开发生产一致性问题 | 开发生产打包产物不一致 (cjs/esm 混用处理) |
+| 性能瓶颈 | - js/native 传输效率问题<br/>- 多次重复 parse/transform/codegen |
+| 复杂工具链 | 在包含 react swc 的 vite 应用，一次生产构建需要: JS → Rust(转义) → Rollup(打包) → Rust(压缩) |
+| 浏览器限制 | 浏览器并发限制 |
 
-在包含 react swc 的 vite 应用，一次生产构建，要经过 js 调用 rust（转义） 到 rollup（打包） 到 rust（压缩）
+<Divider title="工具对比" />
 
-- 浏览器并发限制
+## 各工具优缺点分析
 
-<Divider />
-
-### esbuild
-
-esbuild(GO) 依赖预打包，TS/JSX 转译，压缩
-
-缺点：
-
-1. 产物控制弱
-
-2. 插件少
-
-3. 没有 HMR ， 不支持 react fast refresh 转义
-
-### rollup
-
-rollup(JS/TS) 插件生态，生产环境构建，拆包/产物优化
-
-缺点：最大的问题就是慢
-
-### swc
-
-swc(Rust) React HMR，压缩
-
-缺点：
-
-1. 二进制文件太重(40M)
-2. Bundler 不可用
+| 工具 | 语言 | 功能 | 缺点 |
+| --- | --- | --- | --- |
+| esbuild | GO | - 依赖预打包<br/>- TS/JSX 转译<br/>- 压缩 | - 产物控制弱<br/>- 插件少<br/>- 没有 HMR，不支持 react fast refresh 转义 |
+| rollup | JS/TS | - 插件生态<br/>- 生产环境构建<br/>- 拆包/产物优化 | - 构建速度慢 |
+| swc | Rust | - React HMR<br/>- 压缩 | - 二进制文件太重(40M)<br/>- Bundler 不可用 |
