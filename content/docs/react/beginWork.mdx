@@ -2,8 +2,6 @@
 title: beginWork
 ---
 
-import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
-
 beginWork 根据 wip.tag 进行不同的分支处理根据 reconcile 算法生成下一级的 FiberNode（diff 算法）
 
 无法复用的 update 流程和 mount 流程大体一致，主要区别在于是否会生成带副作用标记 flags 的 FiberNode

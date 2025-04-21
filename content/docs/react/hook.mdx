@@ -88,20 +88,6 @@ const ContextOnlyDispatcher: Dispatcher = {
 
 ## 举个例子 useState
 
-```jsx
-function App() {
-  const [count, setCount] = useState(0);
-  useReducer
-
-  memo useCllback （）=》 ， 【...deps】
-
-  useRef {current:xxx}
-
-
-  return <>{count}</>;
-}
-```
-
 执行这个 `App` 组件,会执行 `renderWithHooks`, 执行`Component`方法的时候,会确认当前组件是`mount`还是`update`阶段。 `mount`，会执行 `mountState` 方法。
 
 `mountState` 里面调用 `workInprogressHook`,创建 `hook` 对象链表

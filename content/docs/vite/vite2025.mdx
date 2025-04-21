@@ -2,6 +2,8 @@
 title: 2025 尤雨溪最新演讲：围绕 Vite 的前端统一工具链
 ---
 
+import Divider from '@/components/ran-motion/divider';
+
 vite 组成：
 
 node_modules 在开发时用 esbuild ，生产用的 rollup
@@ -15,6 +17,8 @@ node_modules 在开发时用 esbuild ，生产用的 rollup
 在包含 react swc 的 vite 应用，一次生产构建，要经过 js 调用 rust（转义） 到 rollup（打包） 到 rust（压缩）
 
 - 浏览器并发限制
+
+<Divider />
 
 ### esbuild
 
