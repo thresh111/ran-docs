@@ -1,0 +1,17 @@
+---
+title: mac使用
+---
+
+## 已损坏，无法打开。 您应该将它移到废纸篓
+
+```bash
+sudo spctl  --master-disable
+```
+
+打开【系统偏好设置】，选择【安全性与隐私】，选择【通用】，可以看到【任何来源】已经选定。
+
+在终端粘贴复制输入命令 + App地址（注意最后有一个空格）：
+
+```bash
+sudo xattr -r -d com.apple.quarantine
+```

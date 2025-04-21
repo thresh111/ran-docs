@@ -1,0 +1,304 @@
+---
+title: 环境配置
+---
+
+import { Banner } from 'fumadocs-ui/components/banner';
+import { InlineTOC } from 'fumadocs-ui/components/inline-toc';
+
+## 软件
+
+[ 梯子 ](https://moegura.cloud/dashboard)
+
+[ PixPin ](https://pixpin.cn/)
+
+[ cursor ](https://www.cursor.com/ja)
+
+[ chrome ](https://www.google.com/intl/zh-CN/chrome/)
+
+### 终端
+
+[ homebrew ](https://brew.sh/zh-cn/)
+
+[ oh my zsh ](https://ohmyz.sh/)
+
+#### 别名
+
+```zsh
+# 别名
+alias cls='clear'
+alias openzsh='open -e .zshrc'
+alias c.='code .'
+alias gc='git clone'
+alias ni='npm install'
+alias nif='npm install -f'
+alias pd='pnpm dev'
+alias gb='get branch'
+alias py="python3"
+```
+
+#### 参数提示
+
+```bash
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+```
+
+```zsh
+plugins=(git zsh-autosuggestions)
+
+# zsh 提示插件配置
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=green'
+ZSH_AUTOSUGGEST_USE_ASYNC="true"
+ZSH_AUTOSUGGEST_MAX_SUGGESTIONS=5
+ZSH_AUTOSUGGEST_CURSOR_STYLE='underline,dashed'
+```
+
+参考：https://www.cnblogs.com/myxie/p/15502601.html
+
+[ iterm2 ](https://iterm2.com/)
+
+## vscode setting
+
+```json
+{
+  "breadcrumbs.enabled": true,
+  "editor.largeFileOptimizations": false,
+  "editor.detectIndentation": false,
+  "editor.cursorSmoothCaretAnimation": "on",
+  "eslint.enable": false,
+  "editor.fontFamily": "Cascadia Mono",
+  "editor.tabSize": 2,
+  "editor.fontSize": 14,
+  "explorer.compactFolders": false,
+  "editor.renderWhitespace": "all",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.snippetSuggestions": "inline",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "html",
+    "typescript",
+    "typescriptreact"
+  ],
+  "javascript.preferences.jsxAttributeCompletionStyle": "braces",
+  "typescript.preferences.jsxAttributeCompletionStyle": "braces",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript|react]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript|react]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/.gitignore": true,
+    "**/.idea": true,
+    "**/.svn": true,
+    "**/.vscode": true,
+    "**/build": true,
+    "**/dist": true,
+    "**/tmp": true,
+    "**/yarn.lock": true,
+    "**/assets": true
+  },
+  "files.exclude": {
+    "**/.umi": false,
+    "**/node_modules": false,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  },
+  "files.associations": {
+    "*.wxss": "css",
+    "*.cjson": "jsonc",
+    "*.wxml": "html",
+    "*.wxs": "javascript",
+    "*.ts": "typescript",
+    "*.vue": "vue",
+    "*.dart": "dart"
+  },
+  "prettier.printWidth": 120,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.semi": true,
+  "prettier.singleQuote": false,
+  "prettier.proseWrap": "preserve",
+  "prettier.bracketSpacing": true,
+  "prettier.endOfLine": "auto",
+  "prettier.htmlWhitespaceSensitivity": "ignore",
+  "prettier.ignorePath": ".prettierignore",
+  "prettier.jsxBracketSameLine": false,
+  "prettier.jsxSingleQuote": false,
+  "prettier.parser": "babylon",
+  "prettier.stylelintIntegration": false,
+  "prettier.trailingComma": "es5",
+  "prettier.vueIndentScriptAndStyle": false,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "vetur.format.defaultFormatter.html": "js-beautify-html",
+  "vetur.format.defaultFormatter.js": "vscode-typescript",
+  "vetur.format.defaultFormatter.ts": "vscode-typescript",
+  "vetur.validation.template": false,
+  "vetur.format.defaultFormatterOptions": {},
+  "emmet.includeLanguages": {
+    "wxml": "html"
+  },
+  "explorer.confirmDelete": false,
+  "git.autofetch": true,
+  "gitlens.advanced.messages": {
+    "suppressLineUncommittedWarning": true,
+    "suppressShowKeyBindingsNotice": true,
+    "suppressUpdateNotice": true
+  },
+  "editor.suggestSelection": "recentlyUsed",
+  "debug.openDebug": "openOnDebugBreak",
+  "terminal.integrated.rendererType": "dom",
+  "git.suggestSmartCommit": false,
+  "launch": {
+    "configurations": [],
+    "compounds": []
+  },
+  "editor.wordWrap": "on",
+  "auto-close-tag.activationOnLanguage": [
+    "xml",
+    "php",
+    "blade",
+    "ejs",
+    "jinja",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "plaintext",
+    "markdown",
+    "vue",
+    "liquid",
+    "erb",
+    "lang-cfml",
+    "cfml",
+    "HTML (EEx)",
+    "HTML (Eex)",
+    "plist"
+  ],
+  "workbench.colorCustomizations": {},
+  "editor.fontLigatures": null,
+  "auto-close-tag.disableOnLanguage": [],
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "debug.javascript.autoAttachSmartPattern": [
+    "${workspaceFolder}/**",
+    "**/$KNOWN_TOOLS$/**"
+  ],
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.profiles.windows": {
+    "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe (migrated)": {
+      "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": []
+    }
+  },
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "git.repositoryScanIgnoredFolders": ["node_modules", ".DS_Store"],
+  "editor.accessibilitySupport": "off",
+  "diffEditor.ignoreTrimWhitespace": true,
+  "editor.guides.indentation": true,
+  "json.schemas": [],
+  "cSpell.userWords": [
+    "ahooks",
+    "antd",
+    "bprogress",
+    "datasource",
+    "deepseek",
+    "dumi",
+    "elementplus",
+    "ellipsize",
+    "exceljs",
+    "fumadocs",
+    "gitee",
+    "ianvs",
+    "Iuse",
+    "langchain",
+    "LayoutSider",
+    "Milvus",
+    "nums",
+    "Pressable",
+    "pxtorem",
+    "reactuses",
+    "reduxjs",
+    "shiki",
+    "strs",
+    "threshlee",
+    "tsfr",
+    "turbopack",
+    "uuidv",
+    "vitepress",
+    "Zipable"
+  ],
+  "gitlens.views.contributors.avatars": false,
+  "editor.cursorBlinking": "expand",
+  "terminal.integrated.cursorStyleInactive": "block",
+  "editor.minimap.enabled": false,
+  "diffEditor.maxComputationTime": 0,
+  "explorer.confirmDragAndDrop": false,
+  "git.confirmSync": false,
+  "explorer.confirmPasteNative": false,
+  "[snippets]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "editor.smoothScrolling": true,
+  "[glsl]": {
+    "editor.defaultFormatter": "raczzalan.webgl-glsl-editor"
+  },
+  "liveServer.settings.donotShowInfoMsg": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "notebook.formatOnSave.enabled": true,
+  "editor.inlineSuggest.showToolbar": "always",
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.activityBar.orientation": "vertical",
+  "git.openRepositoryInParentFolders": "never",
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "editor.formatOnSave": true,
+  "terminal.integrated.env.osx": {},
+  "[markdown]": {
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": true,
+      "strings": true
+    }
+  },
+  "marscode.enableCodelens": {
+    "enableInlineExplain": false,
+    "enableInlineUnitTest": false,
+    "enableInlineDocumentation": false
+  },
+  "marscode.chatLanguage": "cn",
+  "sw-cur.1username": "haonv1",
+  "sw-cur.2password": "a393434412",
+  "cursor.cpp.disabledLanguages": ["markdown", "plaintext", "mdx"]
+}
+```

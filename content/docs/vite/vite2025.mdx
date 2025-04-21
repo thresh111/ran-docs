@@ -1,0 +1,44 @@
+---
+title: 2025 尤雨溪最新演讲：围绕 Vite 的前端统一工具链
+---
+
+vite 组成：
+
+node_modules 在开发时用 esbuild ，生产用的 rollup
+
+- 开发生产打包产物不一致 (cjs/esm 混用处理)
+
+- js/native 传输效率问题
+
+多次重复 parse/transform/codegen
+
+在包含 react swc 的 vite 应用，一次生产构建，要经过 js 调用 rust（转义） 到 rollup（打包） 到 rust（压缩）
+
+- 浏览器并发限制
+
+### esbuild
+
+esbuild(GO) 依赖预打包，TS/JSX 转译，压缩
+
+缺点：
+
+1. 产物控制弱
+
+2. 插件少
+
+3. 没有 HMR ， 不支持 react fast refresh 转义
+
+### rollup
+
+rollup(JS/TS) 插件生态，生产环境构建，拆包/产物优化
+
+缺点：最大的问题就是慢
+
+### swc
+
+swc(Rust) React HMR，压缩
+
+缺点：
+
+1. 二进制文件太重(40M)
+2. Bundler 不可用

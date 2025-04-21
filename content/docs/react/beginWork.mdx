@@ -1,0 +1,36 @@
+---
+title: beginWork
+---
+
+import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+
+beginWork 根据 wip.tag 进行不同的分支处理根据 reconcile 算法生成下一级的 FiberNode（diff 算法）
+
+无法复用的 update 流程和 mount 流程大体一致，主要区别在于是否会生成带副作用标记 flags 的 FiberNode
+
+## beginWork 大体流程
+
+### 1. 处理 fiber.tag
+
+不同的 FiberNode，会有不同的 tag
+
+`HostComponent` 代表的就是原生组件（div、span、p）
+
+FC 在 `mount` 的时候，对应的 tag 为 `IndeterminateComponent，在` update 的时候就会进入 `FunctionComponent`
+
+`HostText` 表示的是文本元素
+
+### 2.创建子 fiber 节点
+
+mount：mountChildFibers
+
+update：reconcileChildFibers
+
+ChildReconciler(shouldTrackSideEffects), `shouldTrackSideEffects` 为是否追踪副作用
+
+## flags 标记
+
+beginWork 在 update 阶段也会做 flags 标记 (跟位置相关)
+
+- 标记 ChildDeletion，这个是代表删除操作标记
+- Placement，这是代表插入或者移动操作

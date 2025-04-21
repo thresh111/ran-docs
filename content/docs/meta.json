@@ -3,8 +3,11 @@
   "root": true,
   "pages": [
     "index",
+    "settings",
     "react",
     "webpack",
+    "vite/vite2025",
+    "update",
     "[Triangle][Vercel](https://vercel.com)"
   ]
 }

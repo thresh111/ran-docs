@@ -1,0 +1,198 @@
+---
+title: completeWork
+---
+
+根据 wip.tag 区分对待
+
+- 创建元素或者标记元素的更新
+
+- flags 冒泡
+
+## mount 阶段
+
+### createInstance
+
+在 mount 流程中，首先会通过 createInstance 创建 FiberNode 所对应的 DOM 元素：
+
+```js
+function createInstance(
+  type,
+  props,
+  rootContainerInstance,
+  hostContext,
+  internalInstanceHandle,
+) {
+  if (
+    typeof props.children === 'string' ||
+    typeof props.children === 'number'
+  ) {
+  }
+
+  const domElement = createElement(
+    type,
+    props,
+    rootContainerInstance,
+    parentNamespace,
+  );
+
+  return domElement;
+}
+```
+
+### appendAllChildren
+
+执行 appendAllChildren，该方法的作用是将下一层 DOM 元素插入到通过 createInstance 方法所创建的 DOM 元素中.
+
+```js
+appendAllChildren = function(parent, workInProgress, ...){
+  let node = workInProgress.child;
+
+  while(node !== null){
+    // 步骤 1，向下遍历，对第一层 DOM 元素执行 appendChild
+    if(node.tag === HostComponent || node.tag === HostText){
+      // 对 HostComponent、HostText 执行 appendChild
+      appendInitialChild(parent, node.stateNode);
+    } else if(node.child !== null) {
+      // 继续向下遍历，直到找到第一层 DOM 元素类型
+      node.child.return = node;
+      node = node.child;
+      continue;
+    }
+    // 终止情况 1: 遍历到 parent 对应的 FiberNode
+    if(node === workInProgress) {
+      return;
+    }
+    // 如果没有兄弟 FiberNode，则向父 FiberNode 遍历
+    while(node.sibling === null){
+      // 终止情况 2: 回到最初执行步骤 1 所在层
+      if(node.return === null || node.return === workInProgress) {
+        return;
+      }
+      node = node.return
+    }
+    // 对兄弟 FiberNode 执行步骤 1
+    node.sibling.return = node.return;
+    node = node.sibling;
+  }
+}
+```
+
+### finalizeInitialChildren
+
+- styles，对应的方法为 setValueForStyles 方法
+
+- innerHTML，对应 setInnerHTML 方法
+
+- 文本类型 children，对应 setTextContent 方法
+
+- 不会再在 DOM 中冒泡的事件，包括 cancel、close、invalid、load、scroll、toggle，对应的是 listenToNonDelegatedEvent 方法
+
+- 其他属性，对应 setValueForProperty 方法
+
+### 总结一下，completeWork 在 mount 阶段执行的工作流程如下：
+
+- 根据 wip.tag 进入不同的处理分支根据 current !== null 区分是 mount 还是 update
+
+- 对应 HostComponent，首先执行 createInstance 方法来创建对应的 DOM 元素
+
+- 执行 appendChildren 将下一级 DOM 元素挂载在上一步所创建的 DOM 元素下
+
+- 执行 finalizeInitialChildren 完成属性初始化
+
+- 执行 bubbleProperties 完成 flags 冒泡
+
+## update 阶段
+
+`updateHostComponent` 的主要逻辑是在 `diffProperties` 方法里面，这个方法会包含两次遍历：
+
+- 第一次遍历，主要是标记更新前有，更新没有的属性，实际上也就是标记删除了的属性
+
+- 第二次遍历，主要是标记更新前后有变化的属性，实际上也就是标记更新了的属性
+
+会 return 出来一个 updatePayload ，保存在 updateQueue 里面
+
+```js
+function diffProperties(
+  domElement,
+  tag,
+  lastRawProps,
+  nextRawProps,
+  rootContainer,
+) {
+  // 保存变化属性的 key、value
+  let updatePayload = null;
+  // 更新前的属性
+  let lastProps;
+  // 更新后的属性
+  let nextProps;
+
+  // 标记删除“更新前有，更新后没有”的属性
+  for (propKey in lastProps) {
+    if (
+      nextProps.hasOwnProperty(propKey) ||
+      !lastProps.hasOwnProperty(propKey) ||
+      lastProps[propKey] == null
+    ) {
+      continue;
+    }
+
+    if (propKey === STYLE) {
+      // 处理 style
+    } else {
+      //其他属性
+      (updatePayload = updatePayload || []).push(propKey, null);
+    }
+  }
+
+  // 标记更新“update流程前后发生改变”的属性
+  for (propKey in lastProps) {
+    let nextProp = nextProps[propKey];
+    let lastProp = lastProps != null ? lastProps[propKey] : undefined;
+
+    if (
+      !nextProps.hasOwnProperty(propKey) ||
+      nextProp === lastProp ||
+      (nextProp == null && lastProp == null)
+    ) {
+      continue;
+    }
+
+    if (propKey === STYLE) {
+      // 处理 style
+    } else if (propKey === DANGEROUSLY_SET_INNER_HTML) {
+      // 处理 innerHTML
+    } else if (propKey === CHILDREN) {
+      // 处理单一文本类型的 children
+    } else if (registrationNameDependencies.hasOwnProperty(propKey)) {
+      if (nextProp != null) {
+        // 处理 onScroll 事件
+      } else {
+        // 处理其他属性
+      }
+    }
+  }
+  //...
+  return updatePayload;
+}
+```
+
+### flags冒泡
+
+通过 flags 冒泡可以高效的找到散落在这颗 wipFiberTree 中有 flag 标记的 FiberNode
+
+在渲染阶段，通过任意一级的 FiberNode.subtreeFlags 都可以快速确定该 FiberNode 以及子树是否存在副作用从而判断是否需要执行和副作用相关的操作。
+
+早期使用 EffectList 收集的副作用，不能快速确定子孙 fiber 是否存在副作用
+
+v18 中的 Suspense 的行为恰恰需要遍历子树
+
+```js
+let subtreeFlags = NoFlags;
+
+// 收集子 FiberNode 的子孙 FiberNode 中标记的 flags
+subtreeFlags |= child.subtreeFlags;
+// 收集子 FiberNode 中标记的 flags
+subtreeFlags ｜= child.flags;
+// 将收集到的所有 flags 附加到当前 FiberNode 的 subtreeFlags 上面
+completeWork.subtreeFlags |= subtreeFlags;
+```
