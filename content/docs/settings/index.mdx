@@ -1,5 +1,6 @@
 ---
-title: 环境配置
+title: 开发配置导入
+icon: Settings
 ---
 
 import { Banner } from 'fumadocs-ui/components/banner';
@@ -300,5 +301,86 @@ ZSH_AUTOSUGGEST_CURSOR_STYLE='underline,dashed'
   "sw-cur.1username": "haonv1",
   "sw-cur.2password": "a393434412",
   "cursor.cpp.disabledLanguages": ["markdown", "plaintext", "mdx"]
+}
+```
+
+## 插件
+
+Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code
+
+Code Runner
+
+Code Spell Checker
+
+CSS Modules
+
+Docker
+
+EditorConfig for VS Code
+
+Error Lens
+
+ESLint
+
+GitLens — Git supercharged
+
+Iconify IntelliSense
+
+Import Cost
+
+Live Server
+
+Lorem ipsum
+
+Material Icon Theme
+
+MDX
+
+PostCSS Language Support
+
+Prettier - Code formatter
+
+px to rem & rpx & vw (cssrem)
+
+Tailwind class sorter
+
+Tailwind CSS IntelliSense
+
+TS in Markdown
+
+Typescript React code snippets ---- infeng
+
+UnoCSS
+
+Version Lens
+
+Biome
+
+## 代码 snippets
+
+```json
+{
+  "React Functional Component": {
+    "prefix": "tsfr",
+    "body": [
+      "import { useEffect, useState } from 'react';",
+      "",
+      "interface I${1:App}Props {}",
+      "",
+      "function ${1:App}(props: I${1:App}Props) {",
+      "\treturn (",
+      "\t\t<div>${1:App}</div>",
+      "\t);",
+      "}",
+      "",
+      "export default ${1:App};"
+    ],
+    "description": "Create React functional component with TypeScript"
+  },
+  "console.log": {
+    "prefix": "lg",
+    "body": ["console.log(${1},'=========> ${1}')"],
+    "description": "打印"
+  }
 }
 ```

@@ -86,31 +86,16 @@ const ContextOnlyDispatcher: Dispatcher = {
 };
 ```
 
-## 举个例子 useState
-
-执行这个 `App` 组件,会执行 `renderWithHooks`, 执行`Component`方法的时候,会确认当前组件是`mount`还是`update`阶段。 `mount`，会执行 `mountState` 方法。
-
-`mountState` 里面调用 `workInprogressHook`,创建 `hook` 对象链表
-
-```js
-function mountState(initialState) {}
-```
-
-```js
-function workInprogressHook() {}
-```
-
 ## hook的组成
 
 ```js
 const hook = {
-
   memoizedState,
 
-  baseState: null,
-  baseQueue: [],
+  baseState,
+  baseQueue,
 
-  queue:[]
+  queue,
 
   next,
 };
