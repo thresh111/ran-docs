@@ -6,8 +6,8 @@
     "react",
     "webpack",
     "vite/vite2025",
-    "update",
     "[Triangle][Vercel](https://vercel.com)",
-    "settings"
+    "settings",
+    "cursor"
   ]
 }

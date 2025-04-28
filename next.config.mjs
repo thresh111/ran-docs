@@ -8,6 +8,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       new URL('https://xiejie-typora.oss-cn-chengdu.aliyuncs.com/**'),
+      new URL('https://pic1.imgdb.cn/**'),
     ],
   },
 };

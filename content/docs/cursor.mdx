@@ -1,0 +1,61 @@
+---
+title: Cursor 使用分享
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Steps } from 'fumadocs-ui/components/steps';
+
+## 配置 cursor
+
+Workbench › Activity Bar: Orientation
+
+## 如何用好 Cursor
+
+### 1. 推荐模型选择
+
+- claude 3.7 sonnet
+- claude 3.5 sonnet 20241022
+- claude 3.5 sonnet
+
+### 2. 提示词指南
+
+<Callout type="info" title="什么是提示词？">
+  提示词（Prompt）是你与 Cursor 沟通的方式。它决定了 Cursor
+  代码输出的质量。一个好的提示词可以让代码生成更加准确，相反则会得到你不想要的代码。
+</Callout>
+
+<Cards>
+  <Card title="❌ 不好的提示词" type="error">
+    "帮我写一个登录页面。" 
+    这样说，Cursor 可能生成一个默认的 HTML文件，功能简单，样式也很普通。
+  </Card>
+
+  <Card title="✅ 好的提示词" type="success">
+    "请为我生成一个 Vue3 登录页面，带有表单验证、响应式布局，并使用
+    TailwindCSS。" 
+    这样 Cursor 才可以为你生成你真正想要的代码。
+  </Card>
+</Cards>
+
+#### 示例: mdx 处理
+
+1. 处理前![处理前](https://pic1.imgdb.cn/item/680f322758cb8da5c8d22361.png)
+2. 提示词 ![提示词](https://pic1.imgdb.cn/item/680f330c58cb8da5c8d223b5.png)
+3. 处理后 ![处理后](https://pic1.imgdb.cn/item/680f338758cb8da5c8d223ee.png)
+
+### 3. 会话历史隔离
+
+每次需求会话都需要隔离，在处理不同需求时，创建不同会话，以免干扰输出效果
+
+![会话历史隔离](https://pic1.imgdb.cn/item/680f37ea58cb8da5c8d24241.png)
+
+### 4. @ 符号
+
+实测比较有用的就是 `Files` 、 `Docs` 、 `Terminals`
+
+![符号工具](https://pic1.imgdb.cn/item/680f384758cb8da5c8d2450e.png)
+
+## 参考引用资料
+
+- https://agijuejin.feishu.cn/wiki/W94dw5CCkiOJTSkKVC5cXQAhnnX
