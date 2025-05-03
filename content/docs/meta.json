@@ -8,6 +8,7 @@
     "vite/vite2025",
     "[Triangle][Vercel](https://vercel.com)",
     "settings",
-    "cursor"
+    "cursor",
+    "apps"
   ]
 }

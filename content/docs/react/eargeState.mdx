@@ -1,0 +1,11 @@
+---
+title: eagerState
+---
+
+在 React 内部，性能优化策略可以分为：
+
+eagerState 策略 bailout 策略
+
+eagerState 的核心逻辑是如果某个状态更新前后没有变化，则可以跳过后续的更新流程。该策略将状态的计算提前到了 schedule 阶段之前。当有 FiberNode 命中 eagerState 策略后，就不会再进入 schedule 阶段，直接使用上一次的状态。
+
+该策略有一个前提条件，那就是当前的 FiberNode 不存在待执行的更新，因为如果不存在待执行的更新，当前的更新就是第一个更新，计算出来的 state 即便不能命中 eagerState，也能够在后面作为基础 state 来使用，这就是为什么 FC 所使用的 Update 数据中有 hasEagerState 以及 eagerState 字段的原因。

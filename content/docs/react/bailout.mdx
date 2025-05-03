@@ -1,0 +1,49 @@
+---
+title: bailout
+---
+
+beginWork 的作用主要是生成 wipFiberNode 的子 FiberNode，要达到这个目录存在两种方式：
+
+- 通过 reconcile 流程生成子 FiberNode
+- 通过命中 bailout 策略来复用子 FiberNode
+
+## 第一次判断
+
+第一次判断发生在确定了是 update 后，立马就会进行是否能够复用的判断：
+
+- oldProps 全等于 newProps
+- Legacy Context 没有变化
+- FiberNode.type 没有变化
+- 当前 FiberNode 没有更新发生
+
+如果以上条件都满足，那么就会命中 bailout 策略，然后就会进行第二次判断。
+
+## 第二次判断
+
+如果第一次没有命中 bailout 策略，则会根据 tag 的不同进入不同的处理逻辑，之后还会再进行第二次的判断。第二次判断的时候会有两种命中的可能：
+
+1. 开发者使用了性能优化 API
+
+- 不存在更新
+- 经过比较（浅比较）后 props 没有变化
+- ref 没有发生改变
+
+2. 虽然有更新，但是 state 没有变化
+
+如果命中了以上任意一种，那么就会进入 bailout 策略
+
+## 命中 bailout 策略
+
+通过 wip.childLanes 可以快速排查“当前 FiberNode 的整颗子树中是否存在更新”，如果不存在，则可以跳过整个子树的 beginWork。
+
+## 旧版 Context API
+
+但是针对“跳过整颗子树的 beginWork”这种程度的 bailout 策略，被跳过的子树就不会再经历 context 入栈出栈的过程
+
+因此如果使用旧的 ContextAPI ，即使此时 context 里面的数据发生了变化，但是因为子树命中了 bailout 策略被整颗跳过了，所以子树中的 context consumer 就不会响应更新。
+
+## 新版 Context API
+
+当 context value 发生变化的时候，beginWork 从 Provider 开始向下遍历，找到 context consumer 之后为当前的 FiberNode 标记一个 renderLanes，再从 context consumer 向上遍历，为祖先的 FiberNode.childLanes 标记一个 renderLanes。
+
+虽然 Provider 命中了 bailout 策略，但是由于流程中 childLanes 已经被修改了，因此就不会命中 “跳过整颗子树的beginWork” 的逻辑
