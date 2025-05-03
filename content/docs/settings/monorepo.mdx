@@ -1,0 +1,384 @@
+---
+title: monorepo 工程化方案
+---
+
+import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
+import { Code } from 'lucide-react';
+
+## 1.创建 monorepo 项目
+
+```bash
+mkdir monorepo
+
+cd monorepo
+
+pnpm init
+
+touch pnpm-workspace.yaml
+```
+
+## 2. 配置 pnpm-workspace.yaml
+
+```yaml
+packages:
+  - 'packages/*'
+  - 'apps/*'
+```
+
+## 3. ci 配置
+
+```json
+{
+  "scripts": {
+    "lint": "eslint",
+    "lint:staged": "lint-staged",
+    "spellcheck": "cspell lint --dot --gitignore --color --cache --show-suggestions \"(packages|apps)/**/*.@(html|js|cjs|mjs|ts|tsx|css|scss|md)\"",
+    "commit": "git-cz",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.2.1",
+    "@types/node": "22.9.4",
+    "@eslint/js": "9.14.0",
+    "globals": "15.15.0",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.13.0",
+    "eslint-plugin-react-refresh": "0.4.14",
+    "eslint-plugin-react-hooks": "5.1.0-rc.0",
+    "eslint-plugin-prettier": "5.2.1",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "cspell": "8.15.7",
+    "lint-staged": "15.2.10",
+    "prettier": "3.3.3",
+    "@commitlint/cli": "19.5.0",
+    "@commitlint/config-conventional": "19.5.0",
+    "commitizen": "4.3.1",
+    "fast-glob": "3.3.2",
+    "husky": "9.1.6",
+    "cz-git": "1.10.1",
+    "tsup": "8.3.5",
+    "turbo": "2.5.2",
+    "rimraf": "6.0.1"
+  },
+  "packageManager": "pnpm@9.12.3"
+}
+```
+
+### eslint 配置
+
+```bash
+touch eslint.config.js
+```
+
+```js
+const eslint = require('@eslint/js');
+const globals = require('globals');
+const reactHooks = require('eslint-plugin-react-hooks');
+const reactRefresh = require('eslint-plugin-react-refresh');
+const eslintPrettier = require('eslint-plugin-prettier');
+const importSort = require('eslint-plugin-simple-import-sort');
+
+const tseslint = require('typescript-eslint');
+
+const ignores = [
+  'dist',
+  'build',
+  '**/*.js',
+  '**/*.mjs',
+  '**/*.d.ts',
+  'eslint.config.js',
+  'commitlint.config.js',
+];
+
+const frontendBuilderConfig = {
+  files: ['apps/frontend/builder/**/*.{ts,tsx}'],
+  languageOptions: {
+    ecmaVersion: 2020,
+    globals: globals.browser,
+  },
+  plugins: {
+    'react-hooks': reactHooks,
+    'react-refresh': reactRefresh,
+  },
+  rules: {
+    ...reactHooks.configs.recommended.rules,
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+    'no-console': 'error',
+  },
+};
+
+const backendBuilderConfig = {
+  files: ['apps/backend/**/*.ts'],
+  languageOptions: {
+    globals: {
+      ...globals.node,
+      ...globals.jest,
+    },
+    parser: tseslint.parser,
+  },
+  rules: {
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'no-console': 'error',
+  },
+};
+
+module.exports = tseslint.config(
+  {
+    ignores,
+    extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
+    plugins: {
+      prettier: eslintPrettier,
+      'simple-import-sort': importSort,
+    },
+    rules: {
+      'prettier/prettier': 'error',
+      'simple-import-sort/imports': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  frontendBuilderConfig,
+  backendBuilderConfig,
+);
+```
+
+### prettier 配置
+
+```bash
+touch .prettierrc
+touch .prettierignore
+```
+
+<CodeBlock title={'.prettierrc'} language="json" icon={<Code />}>
+  <Pre>
+    {JSON.stringify(
+      {
+        trailingComma: 'all',
+        tabWidth: 2,
+        singleQuote: true,
+        printWidth: 140,
+        jsxSingleQuote: false,
+        semi: true,
+        proseWrap: 'never',
+        importOrder: ['^(react|react-dom)$', '^([a-z]|@[a-z])', '', '.*'],
+        plugins: ['@ianvs/prettier-plugin-sort-imports'],
+      },
+      null,
+      2,
+    )}
+  </Pre>
+</CodeBlock>
+
+### husky 配置
+
+在 .husky 目录下创建 pre-commit 文件
+
+```bash
+pnpm exec husky install
+```
+
+<CodeBlock title={'pre-commit'} language="bash" icon={<Code />}>
+  <Pre>npx lint-staged</Pre>
+</CodeBlock>
+
+### commitlint 配置
+
+```bash
+touch commitlint.config.js
+```
+
+```js
+const fg = require('fast-glob');
+
+const getPackages = (packagePath) =>
+  fg.sync('*', { cwd: packagePath, onlyDirectories: true, deep: 2 });
+
+const scopes = [
+  ...getPackages('packages'),
+  ...getPackages('apps'),
+  ...getPackages('apps/frontend'),
+  ...getPackages('apps/backend'),
+  'docs',
+  'project',
+  'style',
+  'ci',
+  'dev',
+  'deploy',
+  'other',
+];
+
+/** @type {import('cz-git').UserConfig} */
+module.exports = {
+  extends: ['@commitlint/config-conventional'], // extends can be nested
+  parserPreset: 'conventional-changelog-conventionalcommits',
+  rules: {
+    'scope-enum': [2, 'always', scopes],
+  },
+  prompt: {
+    settings: {},
+    messages: {
+      skip: ':skip',
+      max: 'upper %d chars',
+      min: '%d chars at least',
+      emptyWarning: 'can not be empty',
+      upperLimitWarning: 'over limit',
+      lowerLimitWarning: 'below limit',
+    },
+    types: [
+      { value: 'feat', name: 'feat:     ✨  A new feature', emoji: '✨ ' },
+      { value: 'fix', name: 'fix:      🐛  A bug fix', emoji: '🐛 ' },
+      {
+        value: 'docs',
+        name: 'docs:     📝  Documentation only changes',
+        emoji: '📝 ',
+      },
+      {
+        value: 'style',
+        name: 'style:    💄  Changes that do not affect the meaning of the code',
+        emoji: '💄 ',
+      },
+      {
+        value: 'refactor',
+        name: 'refactor: 📦️   A code change that neither fixes a bug nor adds a feature',
+        emoji: '📦️ ',
+      },
+      {
+        value: 'perf',
+        name: 'perf:     🚀  A code change that improves performance',
+        emoji: '🚀 ',
+      },
+      {
+        value: 'test',
+        name: 'test:     🚨  Adding missing tests or correcting existing tests',
+        emoji: '🚨 ',
+      },
+      {
+        value: 'build',
+        name: 'build:    🛠   Changes that affect the build system or external dependencies',
+        emoji: '🛠 ',
+      },
+      {
+        value: 'ci',
+        name: 'ci:       🎡  Changes to our CI configuration files and scripts',
+        emoji: '🎡 ',
+      },
+      {
+        value: 'chore',
+        name: "chore:    🔨  Other changes that don't modify src or test files",
+        emoji: '🔨 ',
+      },
+      {
+        value: 'revert',
+        name: 'revert:   ⏪️  Reverts a previous commit',
+        emoji: ':rewind:',
+      },
+    ],
+    useEmoji: true,
+    confirmColorize: true,
+    emojiAlign: 'center',
+    questions: {
+      scope: {
+        description:
+          'What is the scope of this change (e.g. component or file name)',
+      },
+      subject: {
+        description:
+          'Write a short, imperative tense description of the change',
+      },
+      body: {
+        description: 'Provide a longer description of the change',
+      },
+      isBreaking: {
+        description: 'Are there any breaking changes?',
+      },
+      breakingBody: {
+        description:
+          'A BREAKING CHANGE commit requires a body. Please enter a longer description of the commit itself',
+      },
+      breaking: {
+        description: 'Describe the breaking changes',
+      },
+      isIssueAffected: {
+        description: 'Does this change affect any open issues?',
+      },
+      issuesBody: {
+        description:
+          'If issues are closed, the commit requires a body. Please enter a longer description of the commit itself',
+      },
+      issues: {
+        description: 'Add issue references (e.g. "fix #123", "re #123".)',
+      },
+    },
+  },
+};
+```
+
+### lint-staged 配置
+
+```json
+{
+  "lint-staged": {
+    "*.{md,json}": ["prettier --cache --write --no-error-on-unmatched-pattern"],
+    "*.{css,less}": ["prettier --cache --write"],
+    "*.{js,jsx}": ["eslint --fix", "prettier --cache --write"],
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --cache --parser=typescript --write"
+    ]
+  }
+}
+```
+
+### cspell 配置
+
+```bash
+touch cspell.json
+
+mkdir .cspell
+
+touch .cspell/custom-words.txt
+```
+
+```json
+{
+  "import": ["@cspell/dict-lorem-ipsum/cspell-ext.json"],
+  "caseSensitive": false,
+  "dictionaries": ["custom-words"],
+  "dictionaryDefinitions": [
+    {
+      "name": "custom-words",
+      "path": "./.cspell/custom-words.txt",
+      "addWords": true
+    }
+  ],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/lib/**",
+    "**/docs/**",
+    "**/stats.html",
+    "**/language/**",
+    "**/language.ts",
+    "**/package.json",
+    "**/*.md",
+    "eslint.config.js"
+  ]
+}
+```
+
+### git-cz 配置
+
+```json
+{
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
+  }
+}
+```
