@@ -1,14 +1,5 @@
 {
   "title": "Ran Docs",
   "root": true,
-  "pages": [
-    "index",
-    "react",
-    "webpack",
-    "vite/vite2025",
-    "[Triangle][Vercel](https://vercel.com)",
-    "settings",
-    "cursor",
-    "apps"
-  ]
+  "pages": ["index", "react", "webpack", "ts", "settings", "apps", "js"]
 }

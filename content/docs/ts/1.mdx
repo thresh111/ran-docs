@@ -1,0 +1,61 @@
+---
+title: 类型
+---
+
+## 基本类型
+
+- number: 数字类型
+- string: 字符串类型
+- boolean: 布尔类型
+- null: 空类型
+- undefined: 未定义类型
+- 数组
+- object: 对象类型
+
+> null 和 undefined 是所有类型的子类型
+
+## 其他类型
+
+- 联合类型: string | undefined , 配合类型保护进行判断
+
+  > 类型保护：对某个变量进行类型判断之后，可以确定变量的类型
+
+- void 类型：表示没有返回值的函数
+
+- never 类型：表示永远不会返回结果的类型
+
+  > 1. 函数中抛出异常
+  > 2. 函数中出现死循环
+  > 3. 函数中返回了 undefined
+
+```ts
+// 抛出异常
+function throwError(message: string): never {
+  throw new Error(message);
+}
+
+// 无限循环
+function infiniteLoop(): never {
+  while (true) {}
+}
+
+// 返回 undefined
+function returnUndefined(): void {
+  return undefined;
+}
+```
+
+### 字面量类型：表示一个具体的值
+
+> 字面量类型可以配合联合类型使用
+
+```ts
+let a: 'A' = 'A';
+let b: 'B' = 'B';
+
+let c: 'A' | 'B' = 'A';
+```
+
+```ts
+
+```
