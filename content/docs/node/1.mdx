@@ -1,0 +1,259 @@
+---
+title: node 事件循环
+updated: true
+---
+
+# Node.js 事件循环
+
+import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+import { Lightbulb } from 'lucide-react';
+
+<Callout type="info">
+  事件循环使得 `Node.js` 能够执行非阻塞 `I/O` 操作 - 尽管默认情况下只使用单个
+  `JavaScript` 线程 - 通过在可能的情况下将操作卸载(`offload`)到系统内核来实现。
+</Callout>
+
+<Callout type="tip" icon={<Lightbulb />}>
+    ### 为什么称为"卸载"操作？ 
+    当我们说 Node.js 将操作"卸载"到系统内核时，是因为：
+
+      - 耗时的实际工作由系统内核完成
+
+      - Node.js 主线程不会被阻塞
+
+      - 系统内核可以并行处理多个操作
+
+  </Callout>
+## 文件系统操作原理
+
+<Callout type="info">
+  `fs` 模块扮演着 JavaScript 和系统内核之间的"翻译官"角色，它将 JavaScript
+  的文件操作请求转换为系统内核能理解的调用。
+</Callout>
+
+### 详细执行流程
+
+<Steps>
+<Step>
+### 接收请求
+  fs 模块接收到来自 JavaScript 的文件操作请求，比如读取文件、写入文件等
+  </Step>
+  <Step>
+### 转换调用
+
+fs 模块通过 `libuv` 库将 JavaScript 的请求转换为对应的系统调用，这一步是必要的桥接工作
+
+  </Step>
+  <Step>
+### 发送系统调用
+
+转换后的系统调用被发送到操作系统内核，由内核接管后续操作
+
+  </Step>
+ <Step>
+### 执行操作
+
+操作系统内核执行实际的文件读取/写入操作，这个过程是异步的，不会阻塞 Node.js 主线程
+
+ </Step>
+ <Step>
+### 返回结果
+操作完成后，内核将结果返回给 libuv，然后通过事件循环机制返回给 JavaScript 的回调函数
+ </Step>
+
+</Steps>
+
+### 代码示例
+
+```js
+const fs = require('fs');
+
+fs.readFile('example.txt', (err, data) => {
+  if (err) {
+    console.error('读取失败:', err);
+    return;
+  }
+  console.log('文件内容:', data.toString());
+});
+
+console.log('继续执行其他代码...');
+```
+
+# 事件循环解释
+
+`Node.js` 采用 `V8` 作为 `JS` 的解析引擎，而 I/O 处理方面使用了 `libuv` ，`libuv` 是一个基于事件驱动的跨平台抽象层，封装了不同操作系统一些底层特性，对外提供统一的 `API` ，事件循环机制也是它里面的实现。
+
+> 每个框将被称为事件循环的一个"阶段"。
+
+<ImageZoom
+  src={'/node/event-loop.png'}
+  width={600}
+  height={200}
+  alt={'event-loop'}
+/>
+## 事件循环阶段概述
+
+- 定时器(`timers`): 这个阶段执行由 setTimeout() 和 setInterval() 调度的回调函数。
+- 待定回调(`pending callbacks`): 执行延迟到下一个循环迭代的 I/O 回调。
+- 空闲、准备(`prepare,idle`): 仅供内部使用。
+- 轮询(`poll`): 检索新的 I/O 事件; 执行 I/O 相关的回调（几乎所有的回调，除了关闭回调、定时器调度的回调和 setImmediate()）; 如果合适的话，node 将在此阻塞。
+- 检查(`check`): 在这里调用 setImmediate() 回调。
+- 关闭回调(`close callback`): 一些关闭的回调，例如 socket.on('close', ...)。
+
+以上阶段不包括 process.nextTick()
+
+### timers
+
+timers 阶段会执行 setTimeout 和 setInterval 的回调，并且是由 poll 阶段控制的。
+
+在 Node 中，setTimeout 和 setInterval 的回调函数被添加到 timers 阶段，而不是立即执行。
+
+定时器指定的时间也不是准确时间，只能是尽快执行。
+
+### poll
+
+poll 是一个至关重要的阶段，这一阶段中，系统会做两件事情：
+
+- 回到 timers 阶段执行回调
+- 执行 I/O 回调
+
+如果在进入该阶段时没有设定 timers ，会发生两种情况：
+
+1. 如果 poll 队列不为空，则系统会遍历队列并同步执行回调，直到队列为空或达到系统限制。
+2. 如果 poll 队列为空，会发生两种情况：
+   - 如果 setImmediate 回调需要执行，poll 阶段会停止并且进入到 check 阶段执行回调
+   - 如果 setImmediate 回调不需要执行，poll 阶段会等待回调被加入到队列中并立即执行回调（有个超时时间限制）
+
+如果设定了 timers && poll 队列为空，则会判断是否有 timers 超时，如果有的话会回到 timers 阶段执行回调，否则会阻塞等待。
+
+### check
+
+check 阶段会执行 setImmediate 回调，并清空 check 队列。
+
+#### setTimeout 和 setImmediate 区别
+
+<Callout type="warning">
+  这两个函数的执行顺序在不同场景下可能会有所不同。
+</Callout>
+
+#### 执行阶段
+
+- `setTimeout`: 在 **timers** 阶段执行
+- `setImmediate`: 在 **check** 阶段执行
+
+#### 执行时机
+
+- `setTimeout`: 在达到指定的时间阈值后，会在下一个 timers 阶段执行
+- `setImmediate`: 在当前 poll 阶段完成后，会立即进入 check 阶段执行
+
+#### 示例代码
+
+```js
+setTimeout(() => {
+  console.log('timeout');
+}, 0);
+
+setImmediate(() => {
+  console.log('immediate');
+});
+```
+
+<Callout type="info">
+  执行顺序说明： 
+  - 如果代码在 I/O 循环（如文件读取回调）内部执行，`setImmediate`
+  总是先于 `setTimeout` 执行 
+  - 如果在主模块中执行，由于进程启动时的性能因素，顺序是不确定的
+
+  </Callout>
+
+```js
+const fs = require('fs');
+fs.readFile(__filename, () => {
+  setTimeout(() => {
+    console.log('timeout');
+  }, 0);
+  setImmediate(() => {
+    console.log('immediate');
+  });
+});
+```
+
+I/O 回调是在 poll 阶段执行，当回调执行完毕后队列为空，发现存在 setImmediate 回调，所以就直接跳转到 check 阶段去执行回调了。
+
+### process.nextTick
+
+这个函数其实是独立于事件循环之外的，它有一个自己的队列。当每个阶段完成后，如果存在 nextTick 队列，就会清空队列中的所有回调函数，并且优先于其他 microtask 执行。
+
+```js
+setTimeout(() => {
+  console.log('timer1');
+  Promise.resolve().then(function () {
+    console.log('promise1');
+  });
+}, 0);
+process.nextTick(() => {
+  console.log('nextTick1');
+  process.nextTick(() => {
+    console.log('nextTick2');
+    process.nextTick(() => {
+      console.log('nextTick3');
+      process.nextTick(() => {
+        console.log('nextTick4');
+      });
+    });
+  });
+});
+
+// 输出结果
+// nextTick1
+// nextTick2
+// nextTick3
+// nextTick4
+// timer1
+// promise1
+```
+
+### Promise.then
+
+Promise.then 也是独立于事件循环之外的，有一个自己的队列，但是优先级要比 process.nextTick 要低，所以当微任务中同时存在 process.nextTick 和 Promise.then 时，会优先执行前者。
+
+```js
+setTimeout(() => {
+  console.log('timer1');
+  Promise.resolve().then(function () {
+    console.log('promise1');
+  });
+  process.nextTick(() => {
+    console.log('nexttick');
+  });
+}, 0);
+setTimeout(() => {
+  console.log('timer2');
+  Promise.resolve().then(function () {
+    console.log('promise2');
+  });
+}, 0);
+// timer1、nexttick、promise1、timer2、promise2
+```
+
+# Node.js 与浏览器的事件队列的差异
+
+浏览器环境下，就两个队列，一个宏任务队列，一个微任务队列。微任务的任务队列是每个宏任务执行完之后执行。
+
+在 Node.js 中，每个任务队列的每个任务执行完毕之后，就会清空这个微任务队列。
+
+# tips
+
+## 1. 单线程
+
+`Node.js` 默认情况下是单线程的，也就是说只有一个 `JavaScript` 主线程在运行
+
+## 2. 非阻塞 I/O
+
+- 尽管是单线程，但 `Node.js` 能够执行非阻塞的输入/输出操作
+- "非阻塞"意味着在执行 `I/O` 操作（比如读写文件、网络请求等）时，不会停止或阻塞主线程的执行
+
+## 3. 系统内核的利用
+
+- `Node.js` 通过将耗时的 `I/O` 操作"卸载" ( `offload` )到系统内核来实现这个特性
+- 系统内核可以并行处理多个操作，当操作完成时会通知 `Node.js`

@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { FaGithub as GithubIcon } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { FaGithub as GithubIcon, FaBook as NotesIcon } from 'react-icons/fa';
+import { MdArticle as ArticleIcon } from 'react-icons/md';
 
-import { Hero } from '@/components/hero';
 import { Logo } from '@/components/logo';
+import { FireworksBackground } from '@/components/ran-motion/fireworks';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -58,6 +60,7 @@ const contentVariants = {
 export default function HomePage() {
   const isMobile = useIsMobile();
   const [transition, setTransition] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,7 +86,7 @@ export default function HomePage() {
             animate={transition ? 'topLeft' : 'center'}
             transition={{ type: 'spring', stiffness: 200, damping: 30 }}
           >
-            <Logo size={isMobile ? 'lg' : 'xl'} draw betaTag />
+            <Logo size={isMobile ? 'lg' : 'xl'} draw />
           </motion.div>
 
           <motion.div
@@ -97,11 +100,24 @@ export default function HomePage() {
             className="absolute z-40 flex items-center justify-end gap-x-4"
           >
             <a
+              href="/docs"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-fd-accent hover:text-fd-accent-foreground"
+            >
+              <NotesIcon />
+              <span className="hidden sm:inline">笔记</span>
+            </a>
+            <a
+              href="https://juejin.cn/user/1808054277126135?utm_source=gold_browser_extension"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-fd-accent hover:text-fd-accent-foreground"
+            >
+              <ArticleIcon />
+              <span className="hidden sm:inline">博客</span>
+            </a>
+            <a
               href="https://github.com/thresh111"
               rel="noreferrer noopener"
               target="_blank"
-              className="inline-flex sm:mt-1 items-center justify-center rounded-md text-sm font-medium transition-colors duration-100 disabled:pointer-events-none disabled:opacity-50 hover:bg-fd-accent hover:text-fd-accent-foreground p-1.5 [&_svg]:size-5 text-fd-muted-foreground sm:[&_svg]:size-5.5"
-              data-active="false"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors duration-100 hover:bg-fd-accent hover:text-fd-accent-foreground p-1.5 [&_svg]:size-5 text-fd-muted-foreground"
             >
               <GithubIcon />
             </a>
@@ -115,11 +131,34 @@ export default function HomePage() {
           variants={contentVariants}
           initial="hidden"
           animate={transition ? 'visible' : 'hidden'}
-          className="w-full flex flex-col md:flex-row items-center justify-center gap-4 "
+          className="w-full flex flex-col md:flex-row items-center justify-center gap-4"
         >
-          <Hero />
+          <div className="text-center max-w-2xl mx-auto px-4">
+            <h1 className="text-4xl font-bold mb-6">欢迎来到我的知识库</h1>
+            <p className="text-lg text-fd-muted-foreground mb-8">
+              这里记录着我的学习笔记、技术博客和个人思考
+            </p>
+            <div className="flex gap-4 justify-center">
+              <a
+                href="/docs"
+                className="px-6 py-2 bg-fd-primary text-fd-primary-foreground rounded-md hover:bg-fd-primary/90 transition-colors"
+              >
+                浏览笔记
+              </a>
+              <a
+                href="https://juejin.cn/user/1808054277126135?utm_source=gold_browser_extension"
+                className="px-6 py-2 bg-fd-secondary text-fd-secondary-foreground rounded-md hover:bg-fd-secondary/90 transition-colors"
+              >
+                阅读博客
+              </a>
+            </div>
+          </div>
         </motion.div>
       </div>
+      <FireworksBackground
+        className="absolute inset-0 flex items-center justify-center rounded-xl -z-10"
+        color={theme === 'dark' ? 'white' : 'black'}
+      />
     </main>
   );
 }
