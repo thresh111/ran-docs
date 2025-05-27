@@ -1,5 +1,5 @@
 {
   "title": "Ran Docs",
   "root": true,
-  "pages": ["index", "react", "webpack", "ts", "node", "settings", "apps", "js"]
+  "pages": ["interview"]
 }
