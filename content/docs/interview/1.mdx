@@ -1,0 +1,63 @@
+---
+title: 题目总结
+---
+
+## 字符串压缩
+
+1. abcccdd ---> ab3c2d
+1. aaaaa -----> 5a
+
+## 快速查询
+
+有一个字典，返回最大下标
+
+```js
+function Words(wordList) {}
+
+const words = new Words(['apple', 'banana', 'orange', 'pear', 'nana']);
+
+words.search('a', 'e'); // 0
+words.search('b', 'a'); // 1
+words.search('or', 'ge'); // 2
+
+words.search('pear', ''); // 3
+words.search('xx', 'xx'); // null
+
+words.search('', 'nana'); // 4
+```
+
+## 有一个 TREE_DATA , 实现反选函数
+
+```js
+const TREE_DATA = [
+  {
+    key: '浙江省',
+    children: [
+      {
+        key: '杭州市',
+        children: [
+          {
+            key: '拱墅区',
+          },
+          {
+            key: '西湖区',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: '江苏省',
+  },
+];
+
+function unSelect(treeData, selectedKeys, key) {}
+
+console.log(unSelect(TREE_DATA, ['浙江省', '杭州市', '西湖区'], '西湖区')); // []
+console.log(
+  unSelect(TREE_DATA, ['浙江省', '杭州市', '西湖区', '拱墅区'], '拱墅区'),
+); // ['浙江省', '杭州市','西湖区']
+console.log(
+  unSelect(TREE_DATA, ['浙江省', '杭州市', '西湖区', '江苏省'], '江苏省'),
+); // ['浙江省', '杭州市', '西湖区']
+```
