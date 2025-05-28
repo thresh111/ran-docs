@@ -1,0 +1,17 @@
+---
+title: webpack 优化
+---
+
+## cjs 和 esm 区别
+
+1. cjs
+
+动态的 / 执行模块解析是同步的
+
+2. esm
+
+静态的 import a from "./a.js"
+
+动态的 import("./a.js") ---> Promise .then(res=> res)
+
+具名符号导出

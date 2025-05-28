@@ -1,0 +1,123 @@
+---
+title: 笔记
+---
+
+## 富文本开发方案
+
+## 定义 ast 节点
+
+```ts
+type ASTNode = {
+  type: 'heading' | 'paragraph' | 'text';
+  attrs?: unknown;
+  content: string;
+  children?: ASTNode[];
+  style?: {
+    bold?: boolean; // 粗体
+    italic?: boolean; // 斜体
+    underline?: boolean; // 下划线
+    strike?: boolean; // 删除线
+    color?: string; // 颜色
+    backgroundColor?: string; // 背景颜色
+  };
+};
+```
+
+## html 转化 ast
+
+```ts
+function htmlToAst(html: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const nodes = doc.body.childNodes;
+
+  return Array.from(nodes).map((node) => parseNode(node));
+}
+```
+
+## 解析节点
+
+```ts
+function parseNode(node: Node): ASTNode | null {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return {
+      type: 'text',
+      content: node.textContent || '',
+    };
+  }
+
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const element = node as HTMLElement;
+    const tagName = element.tagName.toLowerCase();
+
+    switch (tagName) {
+      case 'h1': {
+        return {
+          type: 'heading',
+          attrs: {
+            level: 1,
+          },
+          content: element.textContent || '',
+        };
+      }
+
+      case 'h2': {
+        return {
+          type: 'heading',
+          attrs: {
+            level: 2,
+          },
+          content: element.textContent || '',
+        };
+      }
+
+      case 'h3': {
+        return {
+          type: 'heading',
+          attrs: {
+            level: 3,
+          },
+          content: element.textContent || '',
+        };
+      }
+
+      case 'p': {
+        return {
+          type: 'paragraph',
+          content: element.textContent || '',
+        };
+      }
+    }
+  }
+
+  return null;
+}
+```
+
+## 富文本 format 方案
+
+### 1. document.execCommand()
+
+```ts
+const format = (command: 'bold' | 'italic') => {
+  document.execCommand(command, false, null);
+};
+```
+
+### 2. selection + range
+
+```ts
+const format = (command: 'bold' | 'italic') => {
+  const selection = window.getSelection();
+
+  const range = selection?.getRangeAt(0);
+
+  const newNode = document.createElement(command === 'bold' ? 'b' : 'i');
+
+  newNode.textContent = range?.toString() || '';
+
+  range?.deleteContents();
+
+  range?.insertNode(newNode);
+};
+```
